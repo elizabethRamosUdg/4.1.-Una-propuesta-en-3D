@@ -10,10 +10,10 @@ public class CamController : MonoBehaviour
     // Inicio
     void Start()
     {
-        offset = transform.position.y - ball.transform.position.y; 
+        offset = transform.position.y - ball.transform.position.y;
     }
 
-    
+
     void Update()
     {
         Vector3 actualPos = transform.position;

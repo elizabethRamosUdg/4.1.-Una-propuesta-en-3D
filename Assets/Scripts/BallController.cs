@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class BallControler : MonoBehaviour
-{   
+{
     // RigidBody
     public Rigidbody rb;
     // Impulso bola
