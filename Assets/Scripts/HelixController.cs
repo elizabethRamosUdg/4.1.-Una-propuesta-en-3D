@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,10 +8,20 @@ public class HelixController : MonoBehaviour
     // Movimiento
     private Vector2 lastTapPosition;
     // Posicion Helix
-    private Vector3 startPosition;
-    void Start()
+    private Vector3 starRotation;
+
+    public Transform topTransform;
+    public Transform goalTransform;
+    public GameObject helixLevelPrefab;
+    public List<Stage> allStages = new List<Stage>();
+    public float helixDistance;
+    private List<GameObject> spawnedLevels = new List<GameObject>();
+
+    private void Awake()
     {
-        startPosition = transform.localEulerAngles;
+        starRotation = transform.localEulerAngles;
+        helixDistance = topTransform.localPosition.y - (goalTransform.localPosition.y + .1f);
+        LoadStage(0);
     }
 
     void Update()
@@ -38,6 +49,50 @@ public class HelixController : MonoBehaviour
         if (Input.GetMouseButtonUp(0))
         {
             lastTapPosition = Vector2.zero;
+        }
+    }
+
+    public void LoadStage(int stageNumber)
+    {
+        // No cargar mas de los que hay registrados
+        Stage stage = allStages[Math.Clamp(stageNumber, 0, allStages.Count - 1)];
+        if (stage == null)
+        {
+            Debug.Log("No hay niveles");
+            return;
+        }
+
+        // Colores
+        Camera.main.backgroundColor = allStages[stageNumber].stageBackgroundColor;
+        FindObjectOfType<BallControler>().GetComponent<Renderer>().material.color = allStages[stageNumber].stageBallColor;
+        
+        // Posicion inicial
+        transform.localEulerAngles = starRotation;
+
+        // Limpiar niveles anteriores
+        foreach (GameObject go in spawnedLevels)
+        {
+            Destroy(go);
+        }
+
+        float levelDistance = helixDistance / stage.levels.Count;
+        // Position y
+        float spawnPosY = topTransform.localPosition.y;
+
+        // Crear diferentes plataformas
+        for (int i = 0; i < stage.levels.Count; i++)
+        {
+            // Distancia entre una plataforma y la otra
+            spawnPosY -= levelDistance;
+
+            // Spawn level
+            GameObject level = Instantiate(helixLevelPrefab,transform);
+
+            // Posiciones correctas
+            level.transform.localPosition = new Vector3(0,spawnPosY, 0);
+
+            // Añadir a spawned levels
+            spawnedLevels.Add(level);
         }
     }
 }
