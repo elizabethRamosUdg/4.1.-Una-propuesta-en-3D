@@ -12,12 +12,16 @@ public class BallControler : MonoBehaviour
     private bool ignoreNextCollision;
 
     private void OnCollisionEnter(Collision collision)
-    {
+    {   
+
         // Evitar multiples coliciones
         if (ignoreNextCollision)
         {
             return;
         }
+
+        // Colision añade puntos
+        GameManager.singleton.AddScore(1);
 
         // Evitar errores al colicionar
         rb.velocity = Vector3.zero;

@@ -21,11 +21,12 @@ public class GameManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+        bestScore = PlayerPrefs.GetInt("HighScore");
     }
 
     public void NextLevel()
     {
-
+        Debug.Log("Next level");
     }
 
     public void RestartLevel()
@@ -40,6 +41,8 @@ public class GameManager : MonoBehaviour
         if (currentScore > bestScore)
         {
             bestScore = currentScore;
+            // Guardar score
+            PlayerPrefs.SetInt("HighScore",bestScore);
         }
     }
 }
