@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class BallControler : MonoBehaviour
@@ -11,8 +12,15 @@ public class BallControler : MonoBehaviour
 
     private bool ignoreNextCollision;
 
+    private Vector3 startPosition;
+
+    private void Start()
+    {
+        startPosition = transform.position;
+    }
+
     private void OnCollisionEnter(Collision collision)
-    {   
+    {
 
         // Evitar multiples coliciones
         if (ignoreNextCollision)
@@ -20,8 +28,12 @@ public class BallControler : MonoBehaviour
             return;
         }
 
-        // Colision añade puntos
-        GameManager.singleton.AddScore(1);
+        // Choco con el queso rojo
+        DeathPart deathPart = collision.transform.GetComponent<DeathPart>();
+        if (deathPart)
+        {
+            GameManager.singleton.RestartLevel();
+        }
 
         // Evitar errores al colicionar
         rb.velocity = Vector3.zero;
@@ -36,5 +48,9 @@ public class BallControler : MonoBehaviour
     private void AllowNextCollision()
     {
         ignoreNextCollision = false;
+    }
+
+    public void ResetBall(){
+        transform.position = startPosition;
     }
 }
