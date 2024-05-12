@@ -103,10 +103,10 @@ public class HelixController : MonoBehaviour
             while (disabledParts.Count < partsToDisable)
             {
                 GameObject randomPart = level.transform.GetChild(
-                    UnityEngine.Random.Range(0,level.transform.childCount)).gameObject;
-                
+                    UnityEngine.Random.Range(0, level.transform.childCount)).gameObject;
+
                 // Esta parte se desactiva
-                if(!disabledParts.Contains(randomPart))
+                if (!disabledParts.Contains(randomPart))
                 {
                     randomPart.SetActive(false);
                     // Añadir a la lista
@@ -124,6 +124,21 @@ public class HelixController : MonoBehaviour
                 if (t.gameObject.activeInHierarchy)
                 {
                     leftParts.Add(t.gameObject);
+                }
+            }
+
+            List<GameObject> deathParts = new List<GameObject>();
+
+            while (deathParts.Count < stage.levels[i].deathPartCount)
+            {
+                GameObject randomParts = leftParts[UnityEngine.Random.Range(0,leftParts.Count)];
+
+                if (!deathParts.Contains(randomParts))
+                {
+                    // Agregar el script de death part
+                    randomParts.gameObject.AddComponent<DeathPart>();
+                    // Añadir a la lista
+                    deathParts.Add(randomParts);
                 }
             }
         }
