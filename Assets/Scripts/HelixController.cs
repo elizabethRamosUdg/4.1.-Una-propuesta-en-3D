@@ -65,7 +65,7 @@ public class HelixController : MonoBehaviour
         // Colores
         Camera.main.backgroundColor = allStages[stageNumber].stageBackgroundColor;
         FindObjectOfType<BallControler>().GetComponent<Renderer>().material.color = allStages[stageNumber].stageBallColor;
-        
+
         // Posicion inicial
         transform.localEulerAngles = starRotation;
 
@@ -86,13 +86,46 @@ public class HelixController : MonoBehaviour
             spawnPosY -= levelDistance;
 
             // Spawn level
-            GameObject level = Instantiate(helixLevelPrefab,transform);
+            GameObject level = Instantiate(helixLevelPrefab, transform);
 
             // Posiciones correctas
-            level.transform.localPosition = new Vector3(0,spawnPosY, 0);
+            level.transform.localPosition = new Vector3(0, spawnPosY, 0);
 
             // Añadir a spawned levels
             spawnedLevels.Add(level);
+
+            // Partes abiertas
+            int partsToDisable = 12 - stage.levels[i].partCount;
+
+            // Saber cuales descavtivamos
+            List<GameObject> disabledParts = new List<GameObject>();
+
+            while (disabledParts.Count < partsToDisable)
+            {
+                GameObject randomPart = level.transform.GetChild(
+                    UnityEngine.Random.Range(0,level.transform.childCount)).gameObject;
+                
+                // Esta parte se desactiva
+                if(!disabledParts.Contains(randomPart))
+                {
+                    randomPart.SetActive(false);
+                    // Añadir a la lista
+                    disabledParts.Add(randomPart);
+                }
+            }
+
+            // Cambios de colores
+            // Partes que nos sobran
+            List<GameObject> leftParts = new List<GameObject>();
+
+            foreach (Transform t in level.transform)
+            {
+                t.GetComponent<Renderer>().material.color = allStages[stageNumber].stageLevelPartColor;
+                if (t.gameObject.activeInHierarchy)
+                {
+                    leftParts.Add(t.gameObject);
+                }
+            }
         }
     }
 }
