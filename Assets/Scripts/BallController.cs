@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -14,6 +15,11 @@ public class BallControler : MonoBehaviour
 
     private Vector3 startPosition;
 
+    public int perfectPass;
+    public float superSpeed = 8;
+    private bool isSuperSpeedActive;
+    public int perfectPassCount = 1;
+
     private void Start()
     {
         startPosition = transform.position;
@@ -28,11 +34,20 @@ public class BallControler : MonoBehaviour
             return;
         }
 
-        // Choco con el queso rojo
-        DeathPart deathPart = collision.transform.GetComponent<DeathPart>();
-        if (deathPart)
+        // Estamos en super speed y colision no es el ultimo disco
+        if (isSuperSpeedActive && !collision.transform.GetComponent<GoalController>())
         {
-            GameManager.singleton.RestartLevel();
+            // Tiempo para evitar fallos
+            Destroy(collision.transform.parent.gameObject, 0.2f);
+        }
+        else
+        {
+            // Choco con el queso rojo
+            DeathPart deathPart = collision.transform.GetComponent<DeathPart>();
+            if (deathPart)
+            {
+                GameManager.singleton.RestartLevel();
+            }
         }
 
         // Evitar errores al colicionar
@@ -43,6 +58,21 @@ public class BallControler : MonoBehaviour
         ignoreNextCollision = true;
         // Llamar cada 2 segundos para cambiar valor de colicion
         Invoke("AllowNextCollision", 0.2f);
+
+        perfectPass = 0;
+        isSuperSpeedActive = false;
+    }
+
+    private void Update()
+    {
+        // Aumentar contador de strikes
+        if (perfectPass >= perfectPassCount && !isSuperSpeedActive)
+        {
+            isSuperSpeedActive = true;
+
+            // aumentar speed
+            rb.AddForce(Vector3.down * superSpeed, ForceMode.Impulse);
+        }
     }
 
     private void AllowNextCollision()
@@ -50,7 +80,8 @@ public class BallControler : MonoBehaviour
         ignoreNextCollision = false;
     }
 
-    public void ResetBall(){
+    public void ResetBall()
+    {
         transform.position = startPosition;
     }
 }
